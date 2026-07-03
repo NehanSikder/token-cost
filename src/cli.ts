@@ -2,7 +2,9 @@
 import { VERSION } from "./index.js";
 import { compare } from "./core/compare.js";
 import { getPricing } from "./core/pricing/pricing.js";
-import { renderComparison } from "./render/table.js";
+import { parseArgs } from "./cli/args.js";
+import { renderComparison, renderVerbose } from "./render/table.js";
+import { renderJson } from "./render/json.js";
 import { shouldColor } from "./render/color.js";
 
 function printHelp(): void {
@@ -15,10 +17,14 @@ function printHelp(): void {
       "Usage:",
       "  token-cost <text>",
       "  cat prompt.txt | token-cost",
+      "  token-cost -m gpt-4o -m deepseek-chat <text>",
       "",
       "Options:",
-      "  -h, --help       Show this help",
-      "  -V, --version    Show version",
+      "  -m, --model <id>   Compare only these models (repeatable)",
+      "  -v, --verbose      Show per-model detail (tokens, rates, context)",
+      "      --json         Machine-readable output",
+      "  -h, --help         Show this help",
+      "  -V, --version      Show version",
       "",
       `Pricing snapshot as of ${getPricing().asOf}.`,
     ].join("\n"),
@@ -35,23 +41,27 @@ async function readStdin(): Promise<string> {
 }
 
 async function main(): Promise<void> {
-  const args = process.argv.slice(2);
+  const args = parseArgs(process.argv.slice(2));
 
-  if (args.includes("--version") || args.includes("-V")) {
+  if (args.version) {
     console.log(`token-cost ${VERSION}`);
     return;
   }
-  if (args.includes("--help") || args.includes("-h")) {
+  if (args.help) {
     printHelp();
     return;
   }
+  if (args.unknownFlags.length > 0) {
+    console.error(`token-cost: unknown option(s): ${args.unknownFlags.join(", ")}`);
+    console.error("Try 'token-cost --help'.");
+    process.exitCode = 1;
+    return;
+  }
 
-  const positional = args.filter((a) => !a.startsWith("-"));
-  let text = positional.join(" ");
+  let text = args.text;
   if (text.length === 0) {
     text = await readStdin();
   }
-
   if (text.trim().length === 0) {
     console.error("token-cost: no input. Pass text as an argument or pipe it via stdin.");
     console.error("Try 'token-cost --help'.");
@@ -59,8 +69,16 @@ async function main(): Promise<void> {
     return;
   }
 
-  const comparison = compare(text);
-  const output = renderComparison(comparison, { color: shouldColor(process.stdout) });
+  const comparison = compare(text, args.models);
+
+  let output: string;
+  if (args.json) {
+    output = renderJson(comparison);
+  } else if (args.verbose) {
+    output = renderVerbose(comparison, { color: shouldColor(process.stdout) });
+  } else {
+    output = renderComparison(comparison, { color: shouldColor(process.stdout) });
+  }
   console.log(output);
 }
 

@@ -5,7 +5,9 @@
  * relative beats absolute (x-multiplier + magnitude bar), legible units ($/1K calls).
  */
 import type { Comparison } from "../core/compare.js";
+import { getPricing } from "../core/pricing/pricing.js";
 import { bold, dim, green, red } from "./color.js";
+import { gridLines, type Align } from "./grid.js";
 
 const BAR_WIDTH = 10;
 const CALLS = 1000; // report cost per 1K calls for legibility
@@ -137,6 +139,68 @@ export function renderComparison(cmp: Comparison, opts: RenderOptions): string {
     lines.push("");
     for (const n of notes) lines.push(dim(n, on));
   }
+
+  return lines.join("\n");
+}
+
+/**
+ * Verbose view: full per-model detail (token count, encoding, raw rates, context,
+ * cost) as an aligned grid, plus the pricing "as of" date.
+ */
+export function renderVerbose(cmp: Comparison, opts: RenderOptions): string {
+  const on = opts.color;
+  if (cmp.rows.length === 0) {
+    return renderComparison(cmp, opts);
+  }
+
+  const minPerCall = cmp.rows[0]!.inputCostPerCall;
+  const maxPerCall = cmp.rows[cmp.rows.length - 1]!.inputCostPerCall;
+  const decimals = decimalsFor(maxPerCall * CALLS);
+
+  const headers = [
+    "MODEL",
+    "TOKENS",
+    "ENC",
+    "IN $/1M",
+    "OUT $/1M",
+    "CTX",
+    "$/1K calls",
+    "vs",
+  ];
+  const align: Align[] = [
+    "left",
+    "right",
+    "left",
+    "right",
+    "right",
+    "right",
+    "right",
+    "right",
+  ];
+  const rows = cmp.rows.map((r) => [
+    r.exact ? r.model : `${r.model} *`,
+    r.tokens.toLocaleString(),
+    r.encoding.replace("_base", ""),
+    `$${r.pricing.input}`,
+    `$${r.pricing.output}`,
+    r.pricing.context != null ? r.pricing.context.toLocaleString() : "—",
+    money(r.inputCostPerCall * CALLS, decimals),
+    multiplier(minPerCall > 0 ? r.inputCostPerCall / minPerCall : 1),
+  ]);
+
+  const grid = gridLines(headers, rows, align);
+  const lines: string[] = [dim(header(cmp), on), "", dim(grid[0]!, on), ...grid.slice(1)];
+
+  const notes: string[] = [];
+  if (cmp.rows.some((r) => !r.exact)) {
+    notes.push("* token count estimated (cl100k proxy); pricing is exact");
+  }
+  if (cmp.unknownModels.length > 0) {
+    notes.push(`no pricing for: ${cmp.unknownModels.join(", ")}`);
+  }
+  notes.push(`prices as of ${getPricing().asOf}`);
+  lines.push("");
+  for (const n of notes) lines.push(dim(n, on));
 
   return lines.join("\n");
 }
