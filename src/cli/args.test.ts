@@ -18,9 +18,10 @@ describe("parseArgs", () => {
   });
 
   it("parses boolean flags", () => {
-    const p = parseArgs(["--json", "-v", "text"]);
+    const p = parseArgs(["--json", "-v", "--offline", "text"]);
     expect(p.json).toBe(true);
     expect(p.verbose).toBe(true);
+    expect(p.offline).toBe(true);
   });
 
   it("flags a missing -m value instead of eating the next flag", () => {

@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 import { VERSION } from "./index.js";
 import { compare } from "./core/compare.js";
-import { getPricing } from "./core/pricing/pricing.js";
+import { activatePricing, getPricing } from "./core/pricing/pricing.js";
+import { refreshPricing, isOffline } from "./core/pricing/refresh.js";
 import { parseArgs } from "./cli/args.js";
 import { renderComparison, renderVerbose } from "./render/table.js";
 import { renderJson } from "./render/json.js";
@@ -23,6 +24,7 @@ function printHelp(): void {
       "  -m, --model <id>   Compare only these models (repeatable)",
       "  -v, --verbose      Show per-model detail (tokens, rates, context)",
       "      --json         Machine-readable output",
+      "      --offline      Skip the pricing refresh (bundled/cached data only)",
       "  -h, --help         Show this help",
       "  -V, --version      Show version",
       "",
@@ -67,6 +69,20 @@ async function main(): Promise<void> {
     console.error("Try 'token-cost --help'.");
     process.exitCode = 1;
     return;
+  }
+
+  // Refresh pricing before comparing: zero network when the cache is fresh,
+  // and every failure path falls back to cached/bundled data (never blocks).
+  const refreshed = await refreshPricing({
+    offline: args.offline || isOffline(),
+  });
+  if (refreshed.snapshot) {
+    activatePricing({
+      as_of: refreshed.snapshot.as_of,
+      source: refreshed.snapshot.source,
+      unit: refreshed.snapshot.unit,
+      models: refreshed.snapshot.models,
+    });
   }
 
   const comparison = compare(text, args.models);

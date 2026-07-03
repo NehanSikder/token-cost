@@ -5,6 +5,7 @@ export interface ParsedArgs {
   readonly models: string[];
   readonly json: boolean;
   readonly verbose: boolean;
+  readonly offline: boolean;
   readonly help: boolean;
   readonly version: boolean;
   /** Positional tokens joined with spaces. */
@@ -19,6 +20,7 @@ export function parseArgs(argv: readonly string[]): ParsedArgs {
   const positional: string[] = [];
   let json = false;
   let verbose = false;
+  let offline = false;
   let help = false;
   let version = false;
 
@@ -28,6 +30,7 @@ export function parseArgs(argv: readonly string[]): ParsedArgs {
     else if (a === "-V" || a === "--version") version = true;
     else if (a === "--json") json = true;
     else if (a === "-v" || a === "--verbose") verbose = true;
+    else if (a === "--offline") offline = true;
     else if (a === "-m" || a === "--model") {
       const next = argv[i + 1];
       if (next !== undefined && !next.startsWith("-")) {
@@ -46,6 +49,7 @@ export function parseArgs(argv: readonly string[]): ParsedArgs {
     models,
     json,
     verbose,
+    offline,
     help,
     version,
     text: positional.join(" "),
