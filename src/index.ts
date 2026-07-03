@@ -6,3 +6,11 @@
  */
 
 export const VERSION = "0.0.1";
+
+export {
+  countTokens,
+  resolveTokenizer,
+  type TokenCount,
+  type TokenizerSpec,
+  type Encoding,
+} from "./core/tokenizer/index.js";
