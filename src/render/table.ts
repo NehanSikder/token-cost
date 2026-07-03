@@ -12,6 +12,11 @@ import { gridLines, type Align } from "./grid.js";
 const BAR_WIDTH = 10;
 const CALLS = 1000; // report cost per 1K calls for legibility
 
+/** Footnote for estimated rows. Full explanation lives in the README appendix. */
+const ESTIMATE_NOTE =
+  '* token count is an estimate — this model\'s own tokenizer isn\'t available, so ' +
+  'we approximate it (the price is exact). See README → "Appendix: Token count accuracy".';
+
 /** Decimals so the largest value stays legible and the column aligns. */
 function decimalsFor(maxValue: number): number {
   if (maxValue >= 1) return 2;
@@ -130,7 +135,7 @@ export function renderComparison(cmp: Comparison, opts: RenderOptions): string {
   // Footnotes
   const notes: string[] = [];
   if (anyEstimate) {
-    notes.push("* token count estimated (cl100k proxy); pricing is exact");
+    notes.push(ESTIMATE_NOTE);
   }
   if (cmp.unknownModels.length > 0) {
     notes.push(`no pricing for: ${cmp.unknownModels.join(", ")}`);
@@ -193,7 +198,7 @@ export function renderVerbose(cmp: Comparison, opts: RenderOptions): string {
 
   const notes: string[] = [];
   if (cmp.rows.some((r) => !r.exact)) {
-    notes.push("* token count estimated (cl100k proxy); pricing is exact");
+    notes.push(ESTIMATE_NOTE);
   }
   if (cmp.unknownModels.length > 0) {
     notes.push(`no pricing for: ${cmp.unknownModels.join(", ")}`);

@@ -30,7 +30,7 @@ describe("renderComparison", () => {
   it("marks estimated models and adds a footnote", () => {
     const out = render("hello world", ["claude-sonnet-4-5"]);
     expect(out).toContain("claude-sonnet-4-5 *");
-    expect(out).toContain("token count estimated");
+    expect(out).toContain("token count is an estimate");
   });
 
   it("does not emit ANSI codes when color is off", () => {
