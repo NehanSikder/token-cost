@@ -30,3 +30,5 @@ export {
   type ModelPricing,
   type PricingTable,
 } from "./core/pricing/pricing.js";
+
+export { compare, type Comparison } from "./core/compare.js";
