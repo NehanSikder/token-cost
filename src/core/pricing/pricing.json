@@ -1,0 +1,61 @@
+{
+  "as_of": "2026-07-03",
+  "source": "litellm/model_prices_and_context_window.json",
+  "unit": "usd_per_million_tokens",
+  "models": {
+    "gpt-4o": {
+      "input": 2.5,
+      "output": 10,
+      "context": 128000,
+      "provider": "openai"
+    },
+    "gpt-4o-mini": {
+      "input": 0.15,
+      "output": 0.6,
+      "context": 128000,
+      "provider": "openai"
+    },
+    "o1": {
+      "input": 15,
+      "output": 60,
+      "context": 200000,
+      "provider": "openai"
+    },
+    "gpt-4-turbo": {
+      "input": 10,
+      "output": 30,
+      "context": 128000,
+      "provider": "openai"
+    },
+    "gpt-3.5-turbo": {
+      "input": 0.5,
+      "output": 1.5,
+      "context": 16385,
+      "provider": "openai"
+    },
+    "claude-sonnet-4-5": {
+      "input": 3,
+      "output": 15,
+      "context": 200000,
+      "provider": "anthropic"
+    },
+    "claude-haiku-4-5": {
+      "input": 1,
+      "output": 5,
+      "context": 200000,
+      "provider": "anthropic"
+    },
+    "gemini-2.5-flash": {
+      "input": 0.3,
+      "output": 2.5,
+      "context": 1048576,
+      "provider": "vertex_ai-language-models"
+    },
+    "deepseek-chat": {
+      "input": 0.28,
+      "output": 0.42,
+      "context": 131072,
+      "provider": "deepseek"
+    }
+  }
+}
