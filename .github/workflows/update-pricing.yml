@@ -1,0 +1,61 @@
+# Weekly pricing refresh — the "robot" from the architecture doc.
+#
+# Regenerates src/core/pricing/pricing.json from LiteLLM's community-maintained
+# price table and commits ONLY when the numbers actually changed. CLIs pick the
+# new file up at runtime via the raw URL (no npm publish needed); the bundled
+# copy rides along in whichever release ships next.
+name: Update pricing
+
+on:
+  schedule:
+    - cron: "0 6 * * 1" # Mondays 06:00 UTC
+  workflow_dispatch: {} # allow manual runs from the Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  update-pricing:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Regenerate pricing snapshot
+        run: node scripts/build-pricing.mjs
+
+      - name: Sanity-check the snapshot
+        run: |
+          node --input-type=module -e "
+            import { readFileSync } from 'node:fs';
+            const p = JSON.parse(readFileSync('src/core/pricing/pricing.json', 'utf8'));
+            const n = Object.keys(p.models).length;
+            if (n < 5) { console.error('Too few models: ' + n); process.exit(1); }
+            for (const [id, m] of Object.entries(p.models)) {
+              if (!(m.input > 0) || !(m.output >= 0)) {
+                console.error('Bad rates for ' + id); process.exit(1);
+              }
+            }
+            console.log('OK: ' + n + ' models, as of ' + p.as_of);
+          "
+
+      - name: Commit if changed
+        run: |
+          # as_of is rewritten every run; commit only when lines OTHER than
+          # as_of changed (i.e. actual prices/models moved).
+          CHANGED=$(git diff -U0 -- src/core/pricing/pricing.json \
+            | grep -E '^[+-][^+-]' | grep -cv '"as_of"' || true)
+          if [ "$CHANGED" -gt 0 ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add src/core/pricing/pricing.json
+            git commit -m "chore(pricing): weekly snapshot refresh"
+            git push
+            echo "Pricing changed — committed."
+          else
+            git checkout -- src/core/pricing/pricing.json
+            echo "No price changes — nothing to commit."
+          fi

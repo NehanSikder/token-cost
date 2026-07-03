@@ -67,4 +67,4 @@ const out = {
 
 const target = new URL("../src/core/pricing/pricing.json", import.meta.url);
 writeFileSync(target, JSON.stringify(out, null, 2) + "\n");
-console.log(`Wrote ${Object.keys(models).length} models to data/pricing.json`);
+console.log(`Wrote ${Object.keys(models).length} models to src/core/pricing/pricing.json`);
