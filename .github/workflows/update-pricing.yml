@@ -4,6 +4,12 @@
 # price table and commits ONLY when the numbers actually changed. CLIs pick the
 # new file up at runtime via the raw URL (no npm publish needed); the bundled
 # copy rides along in whichever release ships next.
+#
+# `main` is PR-protected, so the direct push below must authenticate as an actor
+# that bypasses the ruleset. It checks out with PRICING_PUSH_TOKEN — a fine-grained
+# PAT owned by the repo admin (a bypass actor). The default GITHUB_TOKEN would be
+# rejected. This is the "automatic pricing.json update" path (no PR); the CODEOWNERS
+# rule blocks anyone else from touching the file via PR.
 name: Update pricing
 
 on:
@@ -19,6 +25,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Push as the repo admin (a ruleset bypass actor) so the direct push
+          # to the PR-protected main branch is allowed. Set this secret to a
+          # fine-grained PAT with Contents: read/write on this repo.
+          token: ${{ secrets.PRICING_PUSH_TOKEN }}
 
       - uses: actions/setup-node@v4
         with:

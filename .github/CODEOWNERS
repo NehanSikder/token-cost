@@ -1,0 +1,6 @@
+# Code owners — GitHub requires a listed owner's review before a PR that touches
+# these paths can be merged (enforced by the "protect-main" ruleset).
+#
+# Bundled pricing data may only change with the repository owner's approval.
+# The weekly pricing robot opens a PR touching this file; the owner reviews/merges it.
+/src/core/pricing/pricing.json   @NehanSikder
