@@ -13,8 +13,8 @@
  * always a valid last resort. CI pins with --offline / TOKEN_COST_OFFLINE=1.
  */
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { homedir } from "node:os";
 import { join } from "node:path";
+import { cacheDir } from "../paths.js";
 
 /** Raw pricing snapshot shape (matches pricing.json / build-pricing.mjs output). */
 export interface RawSnapshot {
@@ -53,13 +53,6 @@ const FETCH_TIMEOUT_MS = 3_000; // a pricing refresh must never feel like a hang
 
 export function pricingUrl(): string {
   return process.env["TOKEN_COST_PRICING_URL"] ?? DEFAULT_URL;
-}
-
-export function cacheDir(): string {
-  const override = process.env["TOKEN_COST_CACHE_DIR"];
-  if (override) return override;
-  const xdg = process.env["XDG_CACHE_HOME"];
-  return join(xdg ?? join(homedir(), ".cache"), "token-cost");
 }
 
 export function isOffline(argvFlags: readonly string[] = []): boolean {

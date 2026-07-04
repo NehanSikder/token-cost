@@ -66,11 +66,15 @@ token-cost --json "your prompt" | jq -r '.results[0].model'
 
 ## A note on the `*`
 
-Cost = tokens × price. **Prices are always exact.** Token counts are **exact for OpenAI
-models** (their tokenizers are public) and **estimated** for others — Claude, Gemini,
-DeepSeek, etc. — marked with a `*`, because those providers don't publish a tokenizer.
-Estimates are close for typical text; the newest Claude models run roughly 30% higher than
-the estimate.
+Cost = tokens × price. **Prices are always exact.** Token counts are exact for most models:
+
+- **OpenAI** — always exact; the tokenizers are public and built in.
+- **Open models (DeepSeek, …)** — exact too. The tokenizer is downloaded once on first use
+  and cached; offline, they fall back to an estimate.
+- **Claude & Gemini** — estimated, because those providers don't publish a tokenizer.
+  Estimates are close for typical text; the newest Claude models run roughly 30% higher.
+
+A `*` next to a model means its token count is an estimate, not its exact count.
 
 ## License
 
