@@ -23,6 +23,9 @@ const MODELS = {
   "claude-haiku-4-5": "claude-haiku-4-5",
   "gemini-2.5-flash": "gemini-2.5-flash",
   "deepseek-chat": "deepseek/deepseek-chat",
+  // Open-weight models priced at a representative host (open weights have no single price).
+  "llama-3.3-70b": "groq/llama-3.3-70b-versatile",
+  "qwen2.5-72b": "deepinfra/Qwen/Qwen2.5-72B-Instruct",
 };
 
 const round = (n) => Math.round(n * 1e6) / 1e6;

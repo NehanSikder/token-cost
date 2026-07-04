@@ -61,6 +61,8 @@ afterEach(() => {
 describe("registry helpers", () => {
   it("knows which models have HF tokenizers", () => {
     expect(hasHfTokenizer("deepseek-chat")).toBe(true);
+    expect(hasHfTokenizer("llama-3.3-70b")).toBe(true);
+    expect(hasHfTokenizer("qwen2.5-72b")).toBe(true);
     expect(hasHfTokenizer("gpt-4o")).toBe(false);
     expect(hasHfTokenizer("claude-sonnet-4-5")).toBe(false);
   });
