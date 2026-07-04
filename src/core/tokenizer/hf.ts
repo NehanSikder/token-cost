@@ -20,9 +20,14 @@ interface HfEntry {
   readonly label: string;
 }
 
-/** Open-weight models whose real tokenizer can be loaded from the HF hub. */
+/**
+ * Open-weight models whose real tokenizer can be loaded from the HF hub.
+ * Meta's repos are gated, so Llama points at an ungated mirror of the same tokenizer.
+ */
 const HF_MODELS: Readonly<Record<string, HfEntry>> = {
   "deepseek-chat": { repo: "deepseek-ai/DeepSeek-V3", label: "deepseek-v3" },
+  "llama-3.3-70b": { repo: "unsloth/Llama-3.3-70B-Instruct", label: "llama-3" },
+  "qwen2.5-72b": { repo: "Qwen/Qwen2.5-72B-Instruct", label: "qwen2.5" },
 };
 
 const HF_BASE = "https://huggingface.co";
