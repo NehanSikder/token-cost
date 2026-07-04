@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 import { VERSION } from "./index.js";
 import { compare } from "./core/compare.js";
-import { activatePricing, getPricing } from "./core/pricing/pricing.js";
+import { activatePricing, getPricing, listModels } from "./core/pricing/pricing.js";
 import { refreshPricing, isOffline } from "./core/pricing/refresh.js";
+import { ensureTokenizers } from "./core/tokenizer/index.js";
 import { parseArgs } from "./cli/args.js";
 import { renderComparison, renderVerbose } from "./render/table.js";
 import { renderJson } from "./render/json.js";
@@ -84,6 +85,16 @@ async function main(): Promise<void> {
       models: refreshed.snapshot.models,
     });
   }
+
+  // Load exact tokenizers for any open models in the comparison (lazy download +
+  // cache). Offline or on failure, counting falls back to the cl100k estimate.
+  const offline = args.offline || isOffline();
+  const models = args.models.length > 0 ? args.models : listModels();
+  await ensureTokenizers(models, {
+    offline,
+    onDownloadStart: (model) =>
+      process.stderr.write(`Fetching ${model} tokenizer (one-time, cached after)…\n`),
+  });
 
   const comparison = compare(text, args.models);
 

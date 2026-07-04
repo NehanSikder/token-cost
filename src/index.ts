@@ -10,9 +10,13 @@ export const VERSION = "0.0.1";
 export {
   countTokens,
   resolveTokenizer,
+  ensureTokenizers,
+  ensureTokenizer,
+  hasHfTokenizer,
   type TokenCount,
   type TokenizerSpec,
   type Encoding,
+  type EnsureOptions,
 } from "./core/tokenizer/index.js";
 
 export {
