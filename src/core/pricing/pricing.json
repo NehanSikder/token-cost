@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-07-04",
+  "as_of": "2026-08-17",
   "source": "litellm/model_prices_and_context_window.json",
   "unit": "usd_per_million_tokens",
   "models": {
@@ -60,7 +60,7 @@
     "llama-3.3-70b": {
       "input": 0.59,
       "output": 0.79,
-      "context": 128000,
+      "context": 131072,
       "provider": "groq"
     },
     "qwen2.5-72b": {
