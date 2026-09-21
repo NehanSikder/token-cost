@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-08-31",
+  "as_of": "2026-09-21",
   "source": "litellm/model_prices_and_context_window.json",
   "unit": "usd_per_million_tokens",
   "models": {
@@ -36,7 +36,7 @@
     "claude-sonnet-4-5": {
       "input": 3,
       "output": 15,
-      "context": 200000,
+      "context": 1000000,
       "provider": "anthropic"
     },
     "claude-haiku-4-5": {
