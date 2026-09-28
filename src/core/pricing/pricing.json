@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-09-21",
+  "as_of": "2026-09-28",
   "source": "litellm/model_prices_and_context_window.json",
   "unit": "usd_per_million_tokens",
   "models": {
@@ -56,12 +56,6 @@
       "output": 0.42,
       "context": 131072,
       "provider": "deepseek"
-    },
-    "llama-3.3-70b": {
-      "input": 0.59,
-      "output": 0.79,
-      "context": 131072,
-      "provider": "groq"
     },
     "qwen2.5-72b": {
       "input": 0.36,
